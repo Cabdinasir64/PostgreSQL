@@ -121,3 +121,33 @@ export const deleteUser = async (req: Request, res: Response) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+export const searchUser = async (req: Request, res: Response) => {
+    const { name } = req.query;
+
+    try {
+        if (!name || typeof name !== 'string') {
+            return res.status(400).json({ message: 'Please provide a valid name to search' });
+        }
+
+        const users = await prisma.user.findMany({
+            where: {
+                name: {
+                    contains: name,
+                    mode: 'insensitive'
+                }
+            }
+        });
+
+        if (users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        res.status(200).json({
+            message: 'Users found successfully',
+            users
+        });
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
+};
