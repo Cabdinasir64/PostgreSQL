@@ -151,3 +151,52 @@ export const searchUser = async (req: Request, res: Response) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+
+export const filterUsers = async (req: Request, res: Response) => {
+    const { name, email, sort } = req.query;
+
+    try {
+        const filters: any = {};
+
+        if (name && typeof name === 'string') {
+            filters.name = {
+                contains: name,
+                mode: 'insensitive'
+            };
+        }
+
+        if (email && typeof email === 'string') {
+            filters.email = {
+                contains: email,
+                mode: 'insensitive'
+            };
+        }
+
+        let orderByOption = {};
+        if (sort && typeof sort === 'string') {
+            const direction = sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
+            orderByOption = { createdAt: direction };
+        } else {
+            orderByOption = { createdAt: 'desc' };
+        }
+
+        const users = await prisma.user.findMany({
+            where: filters,
+            orderBy: orderByOption
+        });
+
+        if (users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        res.status(200).json({
+            message: 'Filtered users retrieved successfully',
+            total: users.length,
+            users
+        });
+
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
+};
