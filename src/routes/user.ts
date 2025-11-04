@@ -1,9 +1,11 @@
 import express from 'express';
-import { getUsers, getUserById, createUser, deleteUser, updateUser, searchUser, filterUsers, countUsers, getUsersPaginated, getUsersStats } from '../controllers/user';
+import { getUsers, getUserById, createUser, deleteUser, updateUser, searchUser, filterUsers, countUsers, getUsersPaginated, getUsersStats, getUsersByMonth } from '../controllers/user';
 
 const router = express.Router();
 
 router.get('/', getUsers);
+
+router.get('/users-by-month', getUsersByMonth);
 
 router.get('/stats', getUsersStats);
 
