@@ -70,7 +70,7 @@ export const updateUser = async (req: Request, res: Response) => {
             const emailExists = await prisma.user.findUnique({
                 where: {
                     email,
-                    NOT: { id: Number(id) } 
+                    AND: { id: Number(id) }
                 }
             });
 
