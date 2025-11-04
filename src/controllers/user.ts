@@ -267,3 +267,25 @@ export const getUsersStats = async (req: Request, res: Response) => {
     }
 };
 
+export const getUsersByMonth = async (req: Request, res: Response) => {
+    try {
+        const usersPerMonth = await prisma.$queryRaw<{ month: string; count: bigint }[]>
+            `SELECT to_char("createdAt", 'Month') AS month, COUNT(*) AS count
+            FROM "user"
+            GROUP BY month
+            ORDER BY MIN("createdAt") DESC;`;
+
+        const usersPerMonthJSON = usersPerMonth.map(u => ({
+            month: u.month.trim(),
+            count: Number(u.count)
+        }));
+
+        res.status(200).json({
+            message: 'Users grouped by month successfully',
+            usersPerMonth: usersPerMonthJSON
+        });
+
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
+};
