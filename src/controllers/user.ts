@@ -213,3 +213,41 @@ export const countUsers = async (req: Request, res: Response) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+export const getUsersPaginated = async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = parseInt(req.query.pageSize as string) || 2;
+
+    const skip = (page - 1) * pageSize;
+
+    try {
+        const totalUsers = await prisma.user.count();
+
+        const users = await prisma.user.findMany({
+            skip,
+            take: pageSize,
+            orderBy: { createdAt: 'desc' },
+        });
+
+        const totalPages = Math.ceil(totalUsers / pageSize);
+
+        const pagination = {
+            currentPage: page,
+            pageSize,
+            totalPages,
+            totalUsers,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        };
+
+        res.status(200).json({
+            message: 'Paginated users retrieved successfully',
+            pagination,
+            users
+        });
+
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
