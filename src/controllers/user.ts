@@ -152,7 +152,6 @@ export const searchUser = async (req: Request, res: Response) => {
     }
 };
 
-
 export const filterUsers = async (req: Request, res: Response) => {
     const { name, email, sort } = req.query;
 
@@ -201,7 +200,6 @@ export const filterUsers = async (req: Request, res: Response) => {
     }
 };
 
-
 export const countUsers = async (req: Request, res: Response) => {
     try {
         const totalUsers = await prisma.user.count();
@@ -246,6 +244,24 @@ export const getUsersPaginated = async (req: Request, res: Response) => {
             users
         });
 
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+export const getUsersStats = async (req: Request, res: Response) => {
+    try {
+        const totalUsers = await prisma.user.count();
+
+        const latestUser = await prisma.user.findFirst({
+            orderBy: { createdAt: 'desc' },
+        });
+
+        res.status(200).json({
+            message: 'Users statistics retrieved successfully',
+            totalUsers,
+            latestUser,
+        });
     } catch (err: any) {
         res.status(500).json({ message: err.message });
     }
