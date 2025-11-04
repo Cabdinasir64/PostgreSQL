@@ -1,11 +1,13 @@
 import express from 'express';
-import { getUsers, getUserById, createUser, deleteUser, updateUser, searchUser } from '../controllers/user';
+import { getUsers, getUserById, createUser, deleteUser, updateUser, searchUser, filterUsers } from '../controllers/user';
 
 const router = express.Router();
 
 router.get('/', getUsers);
 
-router.get('/search', searchUser); 
+router.get('/search', searchUser);
+
+router.get('/filter', filterUsers);
 
 router.get('/:id', getUserById);
 
