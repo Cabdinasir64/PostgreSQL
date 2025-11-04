@@ -200,3 +200,16 @@ export const filterUsers = async (req: Request, res: Response) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+
+export const countUsers = async (req: Request, res: Response) => {
+    try {
+        const totalUsers = await prisma.user.count();
+        res.status(200).json({
+            message: 'Total users counted successfully',
+            totalUsers
+        });
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+    }
+};
