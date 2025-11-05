@@ -13,3 +13,60 @@ model user {
     email     String   @unique
     createdAt DateTime @default(now())
 }
+
+model Users {
+    id          Int           @id @default(autoincrement())
+    username    String        @unique @db.VarChar(100)
+    email       String        @unique @db.VarChar(150)
+    password    String        @db.VarChar(255)
+    roles       UserRole[]
+    posts       UserPost[]
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    UserComment UserComment[]
+
+    @@index([email])
+    @@index([username])
+}
+
+model Role {
+    id        Int        @id @default(autoincrement())
+    name      String     @unique @db.VarChar(100)
+    users     UserRole[]
+    createdAt DateTime   @default(now())
+}
+
+model UserRole {
+    userId Int
+    roleId Int
+    user   Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+    role   Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+    @@id([userId, roleId])
+}
+
+model UserPost {
+    id        Int           @id @default(autoincrement())
+    title     String        @db.VarChar(200)
+    content   String?
+    authorId  Int
+    author    Users         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+    comments  UserComment[]
+
+    @@index([title])
+}
+
+model UserComment {
+    id        Int      @id @default(autoincrement())
+    text      String   @db.Text
+    postId    Int
+    authorId  Int
+    post      UserPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+    author    Users    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+
+    @@index([postId])
+    @@index([authorId])
+}
